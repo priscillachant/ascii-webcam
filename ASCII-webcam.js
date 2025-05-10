@@ -10,7 +10,7 @@ let brightnessSlider;
 const density = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
 
 function preload() {
-  shutterSound = loadSound('sound-and-visuals/8-bit shutter.mp3');
+  shutterSound = loadSound('sounds/8-bit shutter.mp3');
   console.log('Shutter sound loaded:', shutterSound);
 }
 
