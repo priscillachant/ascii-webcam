@@ -256,17 +256,19 @@ function setup() {
     box.style('cursor', 'pointer');
     box.style('user-select', 'none');
     box.style('text-align', 'left');
-    box.checked = checked;
+    box.isChecked = checked;
 
     const render = () => {
-      const symbol = box.checked ? 'x' : ' ';
+      const symbol = box.isChecked ? 'x' : ' ';
       box.html(`[${symbol}] ${label}`);
     };
 
     box.mousePressed(() => {
-      box.checked = !box.checked;
+      box.isChecked = !box.isChecked;
       render();
     });
+    // Add .checked() method to return current checked state
+    box.checked = () => box.isChecked;
 
     render();
     return box;
@@ -321,7 +323,24 @@ photoButton.mouseOut(() => {
   // photoButton.style('border', '1px solid #fff');
   photoButton.style('box-sizing', 'content-box');
   photoButton.style('margin', '0');
-  photoButton.mousePressed(saveAsciiImage);
+  photoButton.mousePressed(() => saveAsciiImage());
+
+  const downloadMessage = createDiv('');
+  downloadMessage.parent(uiPanel);
+  downloadMessage.style('color', '#0f0');
+  downloadMessage.style('font-family', 'CozetteCrossedSevenVector, monospace');
+  downloadMessage.style('font-size', '16px');
+  downloadMessage.style('opacity', '0');
+  downloadMessage.style('transition', 'opacity 0.5s ease-out');
+  window.downloadMessage = downloadMessage;
+}
+
+function showDownloadMessage(text) {
+  window.downloadMessage.html(text);
+  window.downloadMessage.style('opacity', '1');
+  setTimeout(() => {
+    window.downloadMessage.style('opacity', '0');
+  }, 2000);
 }
 
 function saveAsciiImage() {
@@ -338,17 +357,26 @@ function saveAsciiImage() {
 
     if (window.exportJpg?.checked() || window.exportPng?.checked()) {
       html2canvas(document.getElementById('asciiBox')).then(canvas => {
+        // Generate ISO timestamp string once for both jpg and png
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, '-');
         if (window.exportJpg?.checked()) {
           const jpgLink = document.createElement('a');
-          jpgLink.download = 'ascii-photo.jpg';
+          jpgLink.download = `ascii-photo-${timestamp}.jpg`;
           jpgLink.href = canvas.toDataURL('image/jpeg');
+          document.body.appendChild(jpgLink);
           jpgLink.click();
+          document.body.removeChild(jpgLink);
+          showDownloadMessage('Saved as .jpg');
         }
         if (window.exportPng?.checked()) {
           const pngLink = document.createElement('a');
-          pngLink.download = 'ascii-photo.png';
+          pngLink.download = `ascii-photo-${timestamp}.png`;
           pngLink.href = canvas.toDataURL('image/png');
+          document.body.appendChild(pngLink);
           pngLink.click();
+          document.body.removeChild(pngLink);
+          showDownloadMessage('Saved as .png');
         }
       });
     }
@@ -358,6 +386,7 @@ function saveAsciiImage() {
   const asciiBox = select('#asciiContent').parent();
 
   if (window.exportTxt?.checked()) {
+    // Always create a new Blob and URL for each download, and revoke after click
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -365,6 +394,7 @@ function saveAsciiImage() {
     a.download = 'ascii-photo.txt';
     a.click();
     URL.revokeObjectURL(url);
+    showDownloadMessage('Saved as .txt');
   }
 }
 
