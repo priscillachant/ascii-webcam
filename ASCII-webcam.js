@@ -283,6 +283,16 @@ function setup() {
   const exportPng = createAsciiCheckbox('.png', false);
   exportPng.parent(formatGroup);
 
+  // Add spacer between export checkboxes and timer checkbox
+  const formatSpacer = createDiv('');
+  formatSpacer.parent(formatGroup);
+  formatSpacer.style('height', '10px');
+
+  // Add 3s Timer checkbox
+  const timerCheckbox = createAsciiCheckbox('3s Timer', false);
+  timerCheckbox.parent(formatGroup);
+  window.timerCheckbox = timerCheckbox;
+
   // Make these accessible globally for saveAsciiImage
   window.exportTxt = exportTxt;
   window.exportJpg = exportJpg;
@@ -344,6 +354,37 @@ function showDownloadMessage(text) {
 }
 
 function saveAsciiImage() {
+  if (window.timerCheckbox?.checked()) {
+    const countdownNumbers = ['3', '2', '1'];
+    countdownNumbers.forEach((num, index) => {
+      setTimeout(() => {
+        photoButton.html(`
++----------------------+<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${num}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
++----------------------+
+        `);
+      }, index * 1000);
+    });
+
+    // After countdown, restore button text and take photo
+    setTimeout(() => {
+      photoButton.html(`
++----------------------+<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;[ TAKE PHOTO ]&nbsp;&nbsp;&nbsp;&nbsp;|<br>
+|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
++----------------------+
+      `);
+      captureAsciiPhoto();
+    }, countdownNumbers.length * 1000);
+  } else {
+    captureAsciiPhoto();
+  }
+}
+
+function captureAsciiPhoto() {
   if (shutterSound && shutterSound.isLoaded()) {
     console.log('Attempting to play shutter sound');
     shutterSound.play();
@@ -356,8 +397,7 @@ function saveAsciiImage() {
     flashOverlay.elt.style.opacity = '0';
 
     if (window.exportJpg?.checked() || window.exportPng?.checked()) {
-      html2canvas(document.getElementById('asciiBox')).then(canvas => {
-        // Generate ISO timestamp string once for both jpg and png
+      html2canvas(document.getElementById('asciiBox'), { scale: 2 }).then(canvas => {
         const now = new Date();
         const timestamp = now.toISOString().replace(/[:.]/g, '-');
         if (window.exportJpg?.checked()) {
@@ -383,10 +423,7 @@ function saveAsciiImage() {
   }, 150);
 
   const content = asciiDiv.html().replace(/<br>/g, '\n').replace(/&nbsp;/g, ' ');
-  const asciiBox = select('#asciiContent').parent();
-
   if (window.exportTxt?.checked()) {
-    // Always create a new Blob and URL for each download, and revoke after click
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
