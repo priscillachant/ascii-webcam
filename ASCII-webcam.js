@@ -305,11 +305,11 @@ function setup() {
   formatGroup.parent(uiPanel);
 
   photoButton = createDiv(`
-+----------------------+<br>
++ - - - - - - - - - - +<br>
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
 |&nbsp;&nbsp;&nbsp;&nbsp;[ TAKE PHOTO ]&nbsp;&nbsp;&nbsp;&nbsp;|<br>
 |&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br>
-+----------------------+
++ - - - - - - - - - - +
   `);
   photoButton.parent(uiPanel);
   photoButton.style('font-family', 'CozetteCrossedSevenVector, monospace');
@@ -343,6 +343,18 @@ photoButton.mouseOut(() => {
   downloadMessage.style('opacity', '0');
   downloadMessage.style('transition', 'opacity 0.5s ease-out');
   window.downloadMessage = downloadMessage;
+  // Add logo at the bottom right corner
+  const logo = createImg('images/asciicam-favicon.png', 'ASCIIcam Logo');
+  logo.style('position', 'fixed');
+  logo.style('bottom', '20px');
+  logo.style('right', '20px');
+  logo.style('width', '50px');
+  logo.style('height', 'auto');
+  logo.style('opacity', '0.8');
+  logo.style('z-index', '1000');
+  logo.style('cursor', 'pointer');
+  logo.mouseOver(() => logo.style('opacity', '1'));
+  logo.mouseOut(() => logo.style('opacity', '0.8'));
 }
 
 function showDownloadMessage(text) {
