@@ -1,3 +1,18 @@
+.site-header {
+  width: 100%;
+  background-color: #111;
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  font-family: 'CozetteCrossedSevenVector', monospace;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
 /* Base page styling */
 body {
   margin: 0;
@@ -82,4 +97,49 @@ button:hover {
     overflow-y: auto;
     max-height: 100vh;
   }
+}
+
+footer {
+  width: 100%;
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9em;
+  clear: both;
+  display: block;
+}
+
+.footer-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+footer a {
+  color: white;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+.horizontal-ad {
+  width: 100%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: center;
+}
+.horizontal-ad ins {
+  display: block;
+  width: 100%;
+  max-width: 1000px; /* Matches your content width */
+}
+.page-layout {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }

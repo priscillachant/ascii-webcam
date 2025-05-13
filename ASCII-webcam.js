@@ -21,19 +21,8 @@ function setup() {
   video.size(160, 120);
   video.hide();
 
-  // Center everything vertically and horizontally using an outer wrapper
-  const layoutWrapper = createDiv();
-  const outerWrapper = createDiv();
-  outerWrapper.parent(document.body);
-  outerWrapper.style('display', 'flex');
-  outerWrapper.style('justify-content', 'center');
-  outerWrapper.style('align-items', 'center');
-  outerWrapper.style('height', '100vh');
-  layoutWrapper.parent(outerWrapper);
-  layoutWrapper.style('display', 'flex');
-  layoutWrapper.style('align-items', 'center');
-  layoutWrapper.style('justify-content', 'center');
-  layoutWrapper.style('gap', '20px');
+  // Use existing .page-layout from HTML
+  const layoutWrapper = select('.page-layout');
 
   asciiDiv = createDiv();
   asciiDiv.parent(layoutWrapper);
@@ -206,9 +195,6 @@ function setup() {
     asciiBox.style('background', bgColorPicker.value());
   });
 
-  document.body.style.display = 'flex';
-  document.body.style.justifyContent = 'center';
-  document.body.style.alignItems = 'center';
   document.body.style.backgroundColor = '#000';
   document.body.style.margin = '0';
   // document.body.style.height = '100vh';
