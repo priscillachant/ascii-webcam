@@ -79,19 +79,7 @@ function setup() {
   brightnessLabel.style('margin-bottom', '10px');
   brightnessLabel.style('font-size', '20px');
 
-  // brightnessSlider = createSlider(0.0, 2.0, 1.0, 0.01);
-  // brightnessSlider.parent(sliderGroup);
-  // brightnessSlider.style('width', '160px');
-  // brightnessSlider.style('appearance', 'none');
-  // brightnessSlider.style('height', '6px');
-  // brightnessSlider.style('background', '#fff');
-  // brightnessSlider.style('outline', 'none');
-  // brightnessSlider.style('border-radius', '0');
-  // brightnessSlider.style('margin', '0');
-  // brightnessSlider.style('display', 'block');
-  // brightnessSlider.style('margin-left', 'auto');
-  // brightnessSlider.style('margin-right', 'auto');
-
+  
   asciiSlider = createDiv(generateAsciiSlider(asciiKnobIndex));
   asciiSlider.parent(sliderGroup);
   asciiSlider.style('color', 'white');
