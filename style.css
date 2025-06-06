@@ -19,7 +19,34 @@ body {
   padding: 0;
   background: #000;
   color: #fff;
-  font-family: monospace;
+  font-family: 'CozetteCrossedSevenVector', monospace;
+}
+/* Utility classes */
+.label {
+  font-family: 'CozetteCrossedSevenVector', monospace;
+  color: white;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.value-display {
+  font-family: 'CozetteCrossedSevenVector', monospace;
+  color: white;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.input-base {
+  background: #222;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  font-family: 'CozetteCrossedSevenVector', monospace;
+}
+
+.input-base:hover {
+  background: #333;
+  cursor: pointer;
 }
 
 /* Container for ASCII + controls */
@@ -39,10 +66,15 @@ body {
 #ascii-output {
   flex: 2;
   padding: 10px;
-  white-space: pre;
-  font-size: 8px;
-  line-height: 6px;
-  letter-spacing: 1px;
+  font-size: inherit;
+  line-height: inherit;
+  letter-spacing: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   background: transparent;
   border: 1px solid white;
   overflow: auto;
@@ -122,18 +154,6 @@ footer a {
 footer a:hover {
   text-decoration: underline;
 }
-
-.horizontal-ad {
-  width: 100%;
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-}
-.horizontal-ad ins {
-  display: block;
-  width: 100%;
-  max-width: 1000px; /* Matches your content width */
-}
 .page-layout {
   display: flex;
   justify-content: flex-start;
@@ -142,4 +162,15 @@ footer a:hover {
   flex-wrap: wrap;
   width: 100%;
   box-sizing: border-box;
+}
+#ascii-output::-webkit-scrollbar {
+  width: 10px;
+}
+
+#ascii-output::-webkit-scrollbar-thumb {
+  background: #444;
+}
+
+#ascii-output::-webkit-scrollbar-track {
+  background: #000;
 }

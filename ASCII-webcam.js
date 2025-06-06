@@ -1,3 +1,6 @@
+// Hello, World! This is my first time "programming" so expect lots of errors.
+// Also this was made with the help of AI. I am not a programmer, I am an artist.
+
 let video;
 let asciiDiv;
 let capturer;
@@ -15,6 +18,20 @@ function preload() {
 }
 
 function setup() {
+  // --- Helper functions for label and value styling ---
+  function styleAsciiLabel(div, size = '20px') {
+    div.style('font-family', 'CozetteCrossedSevenVector, monospace');
+    div.style('color', '#fff');
+    div.style('font-size', size);
+    div.style('margin-bottom', '10px');
+  }
+
+  function styleValueDisplay(div, size = '16px') {
+    div.style('font-family', 'CozetteCrossedSevenVector, monospace');
+    div.style('color', '#fff');
+    div.style('font-size', size);
+    div.style('margin-bottom', '6px');
+  }
   noCanvas();
   pixelDensity(1);
   video = createCapture(VIDEO);
@@ -26,7 +43,6 @@ function setup() {
 
   asciiDiv = createDiv();
   asciiDiv.parent(layoutWrapper);
-  // asciiDiv.style('margin-bottom', '120px');
 
   // New: asciiBox to isolate ASCII webcam output area
   const asciiBox = createDiv();
@@ -44,10 +60,17 @@ function setup() {
   asciiBox.style('position', 'relative');
   asciiBox.style('z-index', '1');
   asciiBox.id('asciiBox');
+  // Lock to fixed 1280x720 size
+  asciiBox.style('width', '960px');
+  asciiBox.style('height', '720px');
+  asciiBox.style('min-width', '960px');
+  asciiBox.style('min-height', '720px');
 
   const asciiContent = createDiv();
   asciiContent.id('asciiContent');
   asciiContent.parent(asciiBox);
+  // Set placeholder content so it's visibly populated on load
+  asciiContent.html('( . . . loading )');
 
   const uiPanel = createDiv();
   uiPanel.parent(layoutWrapper);
@@ -73,13 +96,14 @@ function setup() {
 
   const brightnessLabel = createDiv('Brightness');
   brightnessLabel.parent(sliderGroup);
-  brightnessLabel.style('font-family', 'CozetteCrossedSevenVector, monospace');
-  uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
-  brightnessLabel.style('color', '#fff');
-  brightnessLabel.style('margin-bottom', '10px');
-  brightnessLabel.style('font-size', '20px');
+  styleAsciiLabel(brightnessLabel);
 
-  
+  // Add brightness value display before asciiSlider
+  const brightnessValueDisplay = createDiv(`Brightness: ${asciiKnobIndex - 10}`);
+  brightnessValueDisplay.parent(sliderGroup);
+  styleValueDisplay(brightnessValueDisplay);
+  window.brightnessValueDisplay = brightnessValueDisplay;
+
   asciiSlider = createDiv(generateAsciiSlider(asciiKnobIndex));
   asciiSlider.parent(sliderGroup);
   asciiSlider.style('color', 'white');
@@ -102,32 +126,74 @@ function setup() {
   });
 
   asciiSlider.mouseMoved((event) => {
-    if (isDraggingKnob) {
+    if (isDraggingKnob && mouseIsPressed) {
       const rect = asciiSlider.elt.getBoundingClientRect();
       const moveX = event.clientX - rect.left;
       const charWidth = rect.width / 20;
       asciiKnobIndex = constrain(Math.floor(moveX / charWidth), 0, 19);
+    } else {
+      isDraggingKnob = false;
     }
   });
 
-  const style = document.createElement('style');
-  style.innerHTML = `
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 12px;
-      height: 12px;
-      background: red;
-      cursor: pointer;
+  // --- Character Scale Slider ---
+  const scaleGroup = createDiv();
+  scaleGroup.parent(uiPanel);
+  scaleGroup.style('display', 'flex');
+  scaleGroup.style('flex-direction', 'column');
+  scaleGroup.style('align-items', 'center');
+
+  const scaleLabel = createDiv('Character Scale');
+  scaleLabel.parent(scaleGroup);
+  styleAsciiLabel(scaleLabel);
+
+  window.charScaleIndex = 1; // default to charScale = 4
+  const charScaleValues = Array.from({ length: 20 }, (_, i) => 2 + i * 2);
+  const charScaleLabels = charScaleValues.map(val => val === 4 ? `${val} (true-to-scale)` : `${val}`);
+  window.charScaleLabels = charScaleLabels;
+
+  // Character Scale Value Display (inserted before charScaleSlider)
+  const charScaleValueDisplay = createDiv(`Scale: ${charScaleValues[window.charScaleIndex]}`);
+  charScaleValueDisplay.parent(scaleGroup);
+  styleValueDisplay(charScaleValueDisplay);
+  window.charScaleValueDisplay = charScaleValueDisplay;
+
+  const charScaleSlider = createDiv(generateAsciiSlider(window.charScaleIndex));
+  charScaleSlider.parent(scaleGroup);
+  charScaleSlider.style('color', 'white');
+  charScaleSlider.style('font-family', 'monospace');
+  charScaleSlider.style('font-size', '13px');
+  charScaleSlider.style('text-align', 'center');
+  charScaleSlider.style('user-select', 'none');
+  charScaleSlider.style('cursor', 'default');
+
+  charScaleSlider.mousePressed((event) => {
+    const rect = charScaleSlider.elt.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const charWidth = rect.width / 20;
+    window.charScaleIndex = constrain(Math.floor(clickX / charWidth), 0, 19);
+    window.isDraggingScale = true;
+  });
+
+  charScaleSlider.mouseReleased(() => {
+    window.isDraggingScale = false;
+  });
+
+  charScaleSlider.mouseMoved((event) => {
+    if (window.isDraggingScale && mouseIsPressed) {
+      const rect = charScaleSlider.elt.getBoundingClientRect();
+      const moveX = event.clientX - rect.left;
+      const charWidth = rect.width / 20;
+      window.charScaleIndex = constrain(Math.floor(moveX / charWidth), 0, 19);
+    } else {
+      window.isDraggingScale = false;
     }
-    input[type=range]::-moz-range-thumb {
-      width: 12px;
-      height: 12px;
-      background: red;
-      cursor: pointer;
-    }
-  `;
-  document.head.appendChild(style);
+  });
+
+  window.charScaleSlider = charScaleSlider;
+  window.charScaleValues = charScaleValues;
+
+  // (Removed unused slider thumb style block)
 
   // --- Cozette font loading and application ---
   const fontStyle = document.createElement('style');
@@ -155,10 +221,7 @@ function setup() {
 
   const textColorLabel = createDiv('Text Color');
   textColorLabel.parent(colorControls);
-  textColorLabel.style('font-family', 'CozetteCrossedSevenVector, monospace');
-    uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
-  textColorLabel.style('color', '#fff');
-  textColorLabel.style('font-size', '20px');
+  styleAsciiLabel(textColorLabel);
 
   const textColorPicker = createColorPicker('#ffffff');
   textColorPicker.parent(colorControls);
@@ -170,10 +233,7 @@ function setup() {
 
   const bgColorLabel = createDiv('Background');
   bgColorLabel.parent(colorControls);
-  bgColorLabel.style('font-family', 'CozetteCrossedSevenVector, monospace');
-      uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
-  bgColorLabel.style('color', '#fff');
-  bgColorLabel.style('font-size', '20px');
+  styleAsciiLabel(bgColorLabel);
 
   const bgColorPicker = createColorPicker('#000000');
   bgColorPicker.parent(colorControls);
@@ -185,7 +245,6 @@ function setup() {
 
   document.body.style.backgroundColor = '#000';
   document.body.style.margin = '0';
-  // document.body.style.height = '100vh';
   document.body.style.overflow = 'auto';
 
   flashOverlay = createDiv('');
@@ -215,16 +274,12 @@ function setup() {
 
   const formatLabel = createDiv('Export Format');
   formatLabel.parent(formatGroup);
-  formatLabel.style('font-family', 'CozetteCrossedSevenVector, monospace');
-    uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
-  formatLabel.style('color', '#fff');
-  formatLabel.style('font-size', '20px');
+  styleAsciiLabel(formatLabel);
 
   // Custom ASCII checkboxes
   function createAsciiCheckbox(label, checked) {
     const box = createDiv();
     box.style('font-family', 'CozetteCrossedSevenVector, monospace');
-    uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
     box.style('color', '#fff');
     box.style('font-size', '20px');
     box.style('cursor', 'pointer');
@@ -287,24 +342,20 @@ function setup() {
   `);
   photoButton.parent(uiPanel);
   photoButton.style('font-family', 'CozetteCrossedSevenVector, monospace');
-    uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
   photoButton.style('color', '#fff');
   photoButton.style('cursor', 'pointer');
   photoButton.mouseOver(() => {
-  photoButton.style('color', 'red');
-  photoButton.style('font-size', '20px');
-
-});
-photoButton.mouseOut(() => {
-  photoButton.style('color', '#fff');
-});
+    photoButton.style('color', 'red');
+    photoButton.style('font-size', '20px');
+  });
+  photoButton.mouseOut(() => {
+    photoButton.style('color', '#fff');
+  });
   photoButton.style('text-align', 'center');
   photoButton.style('line-height', '1.2');
   photoButton.style('font-size', '20px');
   photoButton.style('display', 'inline-block');
   photoButton.style('padding', '4px 8px');
-  // photoButton.style('background-color', '#000');
-  // photoButton.style('border', '1px solid #fff');
   photoButton.style('box-sizing', 'content-box');
   photoButton.style('margin', '0');
   photoButton.mousePressed(() => saveAsciiImage());
@@ -312,8 +363,7 @@ photoButton.mouseOut(() => {
   const downloadMessage = createDiv('');
   downloadMessage.parent(uiPanel);
   downloadMessage.style('color', '#0f0');
-  downloadMessage.style('font-family', 'CozetteCrossedSevenVector, monospace');
-  downloadMessage.style('font-size', '16px');
+  styleValueDisplay(downloadMessage);
   downloadMessage.style('opacity', '0');
   downloadMessage.style('transition', 'opacity 0.5s ease-out');
   window.downloadMessage = downloadMessage;
@@ -386,24 +436,24 @@ function captureAsciiPhoto() {
       html2canvas(document.getElementById('asciiBox'), { scale: 2 }).then(canvas => {
         const now = new Date();
         const timestamp = now.toISOString().replace(/[:.]/g, '-');
-        if (window.exportJpg?.checked()) {
-          const jpgLink = document.createElement('a');
-          jpgLink.download = `ascii-photo-${timestamp}.jpg`;
-          jpgLink.href = canvas.toDataURL('image/jpeg');
-          document.body.appendChild(jpgLink);
-          jpgLink.click();
-          document.body.removeChild(jpgLink);
-          showDownloadMessage('Saved as .jpg');
-        }
-        if (window.exportPng?.checked()) {
-          const pngLink = document.createElement('a');
-          pngLink.download = `ascii-photo-${timestamp}.png`;
-          pngLink.href = canvas.toDataURL('image/png');
-          document.body.appendChild(pngLink);
-          pngLink.click();
-          document.body.removeChild(pngLink);
-          showDownloadMessage('Saved as .png');
-        }
+    if (window.exportJpg?.checked()) {
+      const jpgLink = document.createElement('a');
+      jpgLink.download = `AsciiCam-br${asciiKnobIndex - 10}-charScale${window.charScaleValues[window.charScaleIndex]}.jpg`;
+      jpgLink.href = canvas.toDataURL('image/jpeg');
+      document.body.appendChild(jpgLink);
+      jpgLink.click();
+      document.body.removeChild(jpgLink);
+      showDownloadMessage('Saved as .jpg');
+    }
+    if (window.exportPng?.checked()) {
+      const pngLink = document.createElement('a');
+      pngLink.download = `AsciiCam-br${asciiKnobIndex - 10}-charScale${window.charScaleValues[window.charScaleIndex]}.png`;
+      pngLink.href = canvas.toDataURL('image/png');
+      document.body.appendChild(pngLink);
+      pngLink.click();
+      document.body.removeChild(pngLink);
+      showDownloadMessage('Saved as .png');
+    }
       });
     }
   }, 150);
@@ -414,7 +464,7 @@ function captureAsciiPhoto() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'ascii-photo.txt';
+    a.download = `AsciiCam-br${asciiKnobIndex - 10}-charScale${window.charScaleValues[window.charScaleIndex]}.txt`;
     a.click();
     URL.revokeObjectURL(url);
     showDownloadMessage('Saved as .txt');
@@ -422,15 +472,53 @@ function captureAsciiPhoto() {
 }
 
 function draw() {
+  // Preset configuration table for character grid settings
+  const charGridSettings = [
+    { scale: 2, charWidth: 1.42, charHeight: 2, cols: 500, rows: 360 },
+    { scale: 4, charWidth: 2.84, charHeight: 4, cols: 338, rows: 180 },
+    { scale: 6, charWidth: 4.26, charHeight: 6, cols: 255, rows: 120 },
+    { scale: 8, charWidth: 5.68, charHeight: 8, cols: 205, rows: 90 },
+    { scale: 10, charWidth: 7.1, charHeight: 10, cols: 171, rows: 72 },
+    { scale: 12, charWidth: 8.52, charHeight: 12, cols: 147, rows: 60 },
+    { scale: 14, charWidth: 9.94, charHeight: 14, cols: 129, rows: 51 },
+    { scale: 16, charWidth: 11.36, charHeight: 16, cols: 115, rows: 45 },
+    { scale: 18, charWidth: 12.78, charHeight: 18, cols: 104, rows: 40 },
+    { scale: 20, charWidth: 14.2, charHeight: 20, cols: 95, rows: 36 },
+    { scale: 22, charWidth: 15.62, charHeight: 22, cols: 87, rows: 33 },
+    { scale: 24, charWidth: 17.04, charHeight: 24, cols: 80, rows: 30 },
+    { scale: 26, charWidth: 18.46, charHeight: 26, cols: 74, rows: 28 },
+    { scale: 28, charWidth: 19.88, charHeight: 28, cols: 69, rows: 26 },
+    { scale: 30, charWidth: 21.3, charHeight: 30, cols: 65, rows: 24 },
+    { scale: 32, charWidth: 22.72, charHeight: 32, cols: 62, rows: 22 },
+    { scale: 34, charWidth: 24.14, charHeight: 34, cols: 58, rows: 21 },
+    { scale: 36, charWidth: 25.56, charHeight: 36, cols: 55, rows: 20 },
+    { scale: 38, charWidth: 26.98, charHeight: 38, cols: 52, rows: 19 },
+    { scale: 40, charWidth: 28.4, charHeight: 40, cols: 50, rows: 18 }
+  ];
   background(0);
+  // Use preset grid settings for consistent ASCII output
+  const {
+    scale: charScale,
+    charWidth,
+    charHeight,
+    cols,
+    rows
+  } = charGridSettings[window.charScaleIndex] || charGridSettings[1]; // fallback to default index 1
+  // (Removed debug log of charScale and dimensions)
+  video.size(cols, rows);
   video.loadPixels();
 
   if (video.pixels.length === 0) {
     return;
   }
 
-  let asciiImage = '';
+  // --- Character scale logic ---
+  const asciiBox = select('#asciiBox');
+  asciiBox.style('font-size', `${charScale}px`);
+  asciiBox.style('line-height', `${charHeight}px`);
 
+  let asciiImage = '';
+  // Loop over every character position, but traverse columns in reverse for horizontal mirroring
   for (let j = 0; j < video.height; j++) {
     for (let i = video.width - 1; i >= 0; i--) {
       const pixelIndex = (i + j * video.width) * 4;
@@ -453,6 +541,16 @@ function draw() {
 
   select('#asciiContent').html(asciiImage);
   asciiSlider.html(generateAsciiSlider(asciiKnobIndex));
+  // Update brightness value display
+  if (window.brightnessValueDisplay) {
+    const brightnessValue = asciiKnobIndex - 10;
+    const prefix = brightnessValue > 0 ? '+' : '';
+    window.brightnessValueDisplay.html(`${prefix}${brightnessValue}`);
+  }
+  window.charScaleSlider.html(generateAsciiSlider(window.charScaleIndex));
+  if (window.charScaleValueDisplay) {
+    window.charScaleValueDisplay.html(`${window.charScaleValues[window.charScaleIndex]}`);
+  }
 
   if (isRecording && capturer) {
     capturer.capture(document.getElementById(asciiDiv.id));
@@ -483,8 +581,8 @@ function generateAsciiSlider(index) {
   let slider = '';
   for (let i = 0; i < total; i++) {
     slider += (i === index)
-      ? '<span style="color:white;">■</span>'
-      : '<span style="color:white;">=</span>';
+      ? `<span style="color:white;">■</span>`
+      : `<span style="color:white;">=</span>`;
   }
   return '[' + slider + ']';
 }
