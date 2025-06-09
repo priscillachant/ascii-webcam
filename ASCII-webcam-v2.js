@@ -198,10 +198,14 @@ function setup() {
     const clickX = event.clientX - rect.left;
     const knobWidth = rect.width / 20;
     const index = constrain(Math.floor(clickX / knobWidth), 0, 19);
-    if (Math.abs(index - asciiKnobIndex) <= 1) {
-      // allow click or slight drag start
-      isDraggingKnob = true;
+    asciiKnobIndex = index;
+    asciiSlider.html(generateAsciiSlider(asciiKnobIndex));
+    if (window.brightnessValueDisplay) {
+      const brightnessValue = asciiKnobIndex - 10;
+      const prefix = brightnessValue > 0 ? '+' : '';
+      window.brightnessValueDisplay.html(`${prefix}${brightnessValue}`);
     }
+    isDraggingKnob = true;
   });
   // Mouse moved event for asciiSlider
   asciiSlider.mouseMoved((event) => {
