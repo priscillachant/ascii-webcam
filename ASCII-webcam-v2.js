@@ -1,4 +1,3 @@
-// Store last ASCII image for exporting as text
 // Hello, World! This is my first time "programming" so expect lots of errors.
 // Also this was made with the help of AI. I am not a programmer, I am an artist.
 // VERSION 2
@@ -20,7 +19,6 @@ let captureFrameStep = 2; // Capture every 2nd frame
 
 const density = "Ñ@#W$9876543210?!abc;:+=-,._                    ";
 
-// --- Utility function: generateAsciiSlider ---
 function generateAsciiSlider(index) {
   const total = 20;
   let slider = '';
@@ -32,7 +30,6 @@ function generateAsciiSlider(index) {
   return '[' + slider + ']';
 }
 
-// Preset configuration table for character grid settings
   const charGridSettings = [
     { scale: 2, charWidth: 1.42, charHeight: 2, cols: 1038, rows: 360 },
     { scale: 4, charWidth: 2.84, charHeight: 4, cols: 519, rows: 180 },
@@ -83,7 +80,6 @@ function setup() {
   style.innerHTML = `.download-toast { pointer-events: none; }`;
   document.head.appendChild(style);
   frameRate(30);
-  // --- Move charScaleIndex and charScaleValues/Labels to top of setup ---
   window.charScaleIndex = 5; // default to charScale = 12
   const charScaleValues = Array.from({ length: 20 }, (_, i) => 2 + i * 2);
   const charScaleLabels = charScaleValues.map(val => val === 4 ? `${val} (true-to-scale)` : `${val}`);
@@ -136,11 +132,8 @@ function setup() {
   video.size(160, 120);
   video.hide();
 
-
-  // Use existing .page-layout from HTML
   const layoutWrapper = select('.page-layout');
 
-  // Replace asciiDiv with a canvas wrapper as per instructions
   const canvasWrapper = createDiv();
   canvasWrapper.parent(layoutWrapper);
   canvasWrapper.child(p5Canvas);
@@ -166,7 +159,6 @@ function setup() {
   uiPanel.style('font-family', 'CozetteCrossedSevenVector, monospace');
   uiPanel.elt.style.fontFamily = 'CozetteCrossedSevenVector, monospace';
 
-  // Wrap the brightness slider in its own container for label
   const sliderGroup = createDiv();
   sliderGroup.parent(uiPanel);
   sliderGroup.style('display', 'flex');
@@ -239,7 +231,6 @@ function setup() {
   styleAsciiLabel(scaleLabel);
 
 
-  // Character Scale Value Display (inserted before charScaleSlider)
   const charScaleValueDisplay = createDiv(`Scale: ${charScaleValues[window.charScaleIndex]}`);
   charScaleValueDisplay.parent(scaleGroup);
   styleValueDisplay(charScaleValueDisplay);
@@ -387,7 +378,6 @@ function setup() {
       box.isChecked = !box.isChecked;
       render();
     });
-    // Add .checked() method to return current checked state
     box.checked = () => box.isChecked;
 
     render();
@@ -408,7 +398,7 @@ function setup() {
   formatSpacer.parent(formatGroup);
   formatSpacer.style('height', '10px');
 
-  // Add 3s Timer checkbox
+  // 3s Timer checkbox
   const timerCheckbox = createAsciiCheckbox('3s Timer', false);
   timerCheckbox.parent(formatGroup);
   window.timerCheckbox = timerCheckbox;
@@ -481,7 +471,6 @@ function setup() {
   cameraButton.style('line-height', '1.2');
   cameraButton.style('height', 'auto');
   cameraButton.style('margin-top', '20px');
-  // Add hover effect to turn the entire ASCII camera red on hover
   cameraButton.mouseOver(() => {
     cameraButton.style('color', 'red');
   });
@@ -517,7 +506,7 @@ function setup() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-            const webmFileName = `AsciiCam-br${asciiKnobIndex - 10}-charScale${window.charScaleValues[window.charScaleIndex]}-${timestamp}.webm`;
+            const webmFileName = `AsciiCam-br${asciiKnobIndex - 10}-charScale${window.charScaleValues[window.charScaleIndex]}.webm`;
             a.href = url;
             a.download = webmFileName;
             a.click();
